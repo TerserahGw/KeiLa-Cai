@@ -38,6 +38,10 @@ async def search_characters(query):
         print(f"Terjadi kesalahan saat mencari karakter: {e}")
         return None
 
+@app.route('/')
+async def index():
+    return 'Hello, Vercel!
+
 @app.route('/new', methods=['GET'])
 async def new_chat():
     char_id = request.args.get('char')
