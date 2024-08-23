@@ -1,2 +1,2 @@
-sanic==23.9.0
+sanic==24.6.0
 characterai
