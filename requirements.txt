@@ -6,6 +6,7 @@ characterai==1.0.1
 curl_cffi==0.7.1
 html5tagger==1.3.0
 httptools==0.6.1
+mangum==0.17.0
 multidict==6.0.5
 pycparser==2.22
 pydantic==2.8.2
