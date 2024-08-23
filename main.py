@@ -1,9 +1,8 @@
 from sanic import Sanic, response
 from sanic.request import Request
+from sanic.asgi import ASGIApp
 from characterai import aiocai
 import os
-import asyncio
-from sanic.asgi import ASGIApp
 
 app = Sanic("my_app")
 asgi_app = ASGIApp(app)
@@ -83,11 +82,6 @@ async def search(request: Request):
     if results:
         return response.json(results)
     return response.json({"error": "Gagal melakukan pencarian"}, status=500)
-
-# Tambahkan endpoint ASGI untuk Vercel
-@app.route('/api', methods=['POST'])
-async def api(request: Request):
-    return await asgi_app.handle_request(request)
 
 # Konversi Sanic ASGI ke ASGIApp untuk Vercel
 def app_asgi():
