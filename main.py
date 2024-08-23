@@ -41,6 +41,7 @@ async def search_characters(query):
 
 @app.route('/')
 async def index():
+    # Menyajikan file index.html dari direktori utama proyek
     return await send_from_directory(os.getcwd(), 'index.html')
 
 @app.route('/new', methods=['GET'])
