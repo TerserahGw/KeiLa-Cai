@@ -1,8 +1,10 @@
-from quart import Quart, request, jsonify
-from characterai import aiocai
+from sanic import Sanic
+from sanic.response import json
+import aiohttp
 import asyncio
+from characterai import aiocai
 
-app = Quart(__name__)
+app = Sanic("MyApp")
 
 token = '29422450f9ebdf864bb798a6f9796cdab019d9f1'
 client = aiocai.Client(token)
@@ -38,37 +40,40 @@ async def search_characters(query):
         print(f"Terjadi kesalahan saat mencari karakter: {e}")
         return None
 
-@app.route('/new', methods=['GET'])
-async def new_chat():
+@app.get("/new")
+async def new_chat(request):
     char_id = request.args.get('char')
     if not char_id:
-        return jsonify({"error": "char_id tidak valid"}), 400
+        return json({"error": "char_id tidak valid"}, status=400)
+    
     chat_id = await create_new_chat(char_id)
     if chat_id:
-        return jsonify({"chat_id": chat_id})
-    return jsonify({"error": "Gagal membuat chat baru"}), 500
+        return json({"chat_id": chat_id})
+    return json({"error": "Gagal membuat chat baru"}, status=500)
 
-@app.route('/chat', methods=['GET'])
-async def chat():
+@app.get("/chat")
+async def chat(request):
     char_id = request.args.get('char')
     chat_id = request.args.get('id')
     text = request.args.get('text')
     if not char_id or not chat_id or not text:
-        return jsonify({"error": "char_id, chat_id, dan text diperlukan"}), 400
+        return json({"error": "char_id, chat_id, dan text diperlukan"}, status=400)
+    
     result = await send_message_to_chat(chat_id, char_id, text)
     if result:
-        return jsonify(result)
-    return jsonify({"error": "Gagal mengirim pesan"}), 500
+        return json(result)
+    return json({"error": "Gagal mengirim pesan"}, status=500)
 
-@app.route('/search', methods=['GET'])
-async def search():
+@app.get("/search")
+async def search(request):
     query = request.args.get('q')
     if not query:
-        return jsonify({"error": "Query pencarian diperlukan"}), 400
+        return json({"error": "Query pencarian diperlukan"}, status=400)
+    
     results = await search_characters(query)
     if results:
-        return jsonify(results)
-    return jsonify({"error": "Gagal melakukan pencarian"}), 500
+        return json(results)
+    return json({"error": "Gagal melakukan pencarian"}, status=500)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080, debug=True)
