@@ -1,8 +1,8 @@
+import mangum
 from sanic import Sanic, response
 from sanic.request import Request
 from characterai import aiocai
 import os
-import mangum
 
 app = Sanic(__name__)
 
