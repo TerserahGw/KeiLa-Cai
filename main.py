@@ -85,5 +85,8 @@ async def search(request: Request):
 # Gunakan Mangum untuk integrasi dengan AWS Lambda
 handler = mangum.Mangum(app)
 
+def lambda_handler(event, context):
+    return handler(event, context)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
