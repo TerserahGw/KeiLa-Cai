@@ -1,10 +1,12 @@
-import mangum
 from sanic import Sanic, response
 from sanic.request import Request
 from characterai import aiocai
 import os
+import asyncio
+from sanic.asgi import ASGIApp
 
-app = Sanic(__name__)
+app = Sanic("my_app")
+asgi_app = ASGIApp(app)
 
 # Token API untuk karakter AI
 token = '29422450f9ebdf864bb798a6f9796cdab019d9f1'
@@ -82,11 +84,14 @@ async def search(request: Request):
         return response.json(results)
     return response.json({"error": "Gagal melakukan pencarian"}, status=500)
 
-# Gunakan Mangum untuk integrasi dengan AWS Lambda
-handler = mangum.Mangum(app)
+# Tambahkan endpoint ASGI untuk Vercel
+@app.route('/api', methods=['POST'])
+async def api(request: Request):
+    return await asgi_app.handle_request(request)
 
-def lambda_handler(event, context):
-    return handler(event, context)
+# Konversi Sanic ASGI ke ASGIApp untuk Vercel
+def app_asgi():
+    return asgi_app
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
