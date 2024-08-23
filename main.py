@@ -1,11 +1,12 @@
 from sanic import Sanic, response
 from sanic.request import Request
-from sanic.response import html
 from characterai import aiocai
 import os
+import mangum
 
 app = Sanic(__name__)
 
+# Token API untuk karakter AI
 token = '29422450f9ebdf864bb798a6f9796cdab019d9f1'
 client = aiocai.Client(token)
 
@@ -45,7 +46,7 @@ async def index(request: Request):
     try:
         with open('index.html', 'r') as f:
             html_content = f.read()
-        return html(html_content)
+        return response.html(html_content)
     except Exception as e:
         return response.json({"error": f"Terjadi kesalahan: {e}"}, status=500)
 
@@ -80,6 +81,9 @@ async def search(request: Request):
     if results:
         return response.json(results)
     return response.json({"error": "Gagal melakukan pencarian"}, status=500)
+
+# Gunakan Mangum untuk integrasi dengan AWS Lambda
+handler = mangum.Mangum(app)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
