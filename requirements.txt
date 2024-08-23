@@ -1,2 +1,2 @@
-sanic==24.6.0
+quart
 characterai
